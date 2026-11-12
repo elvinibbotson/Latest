@@ -21,35 +21,81 @@ sources[0]={
 	"name":"The Guardian",
 	"url":"https://content.guardianapis.com/search?api-key=17cb040c-0a32-4478-829c-382887d95fed"	
 }
-// add FinancialTimes, New York Times, AP, MSN,...
+sources[1]={
+	"name":"BBC News",
+	"url":"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=cb249f18c5814e8b9a6eb540f590e40a"
+}
+sources[2]={
+	"name":"The Washington Post",
+	"url":"https://newsapi.org/v2/top-headlines?sources=the-washington-post&apiKey=cb249f18c5814e8b9a6eb540f590e40a"
+}
+sources[3]={
+	"name":"Associated Press",
+	"url":"https://newsapi.org/v2/top-headlines?sources=associated-press&apiKey=cb249f18c5814e8b9a6eb540f590e40a"
+}
+sources[4]={
+	"name":"UK news",
+	"url":"https://gnews.io/api/v4/top-headlines?lang=en&country=gb&apikey=098cacc5ea46b70cf48d64acb673b23a"
+}
+sources[6]={
+	"name":"US news",
+	"url":"https://gnews.io/api/v4/top-headlines?lang=en&country=us&apikey=098cacc5ea46b70cf48d64acb673b23a"
+}
 
 // GET NEWS ITEMS FROM CURRENT NEWS SOURCE
 async function getNews() {
+	/* TRY GNews API
+	var url="https://gnews.io/api/v4/top-headlines?lang=en&source=bbc-news&apikey=098cacc5ea46b70cf48d64acb673b23a";
+	*/
+	/* TRY USING NEWS API
+	var url="https://newsapi.org/v2/top-headlines?sources=associated-press&apiKey=cb249f18c5814e8b9a6eb540f590e40a";
+	*/
+	// NEWS FROM SOURCES
 	console.log('get news items from '+source.name);
 	var url=source.url;
 	var response=await fetch(url,
 	{
-		method: "GET",
-		headers: {"Content-Type": "application/json"}
+		method: "GET"
 	});
 	var data=await response.json();
+	// NewsAPI code...
+	// console.log('results: '+data.sources.length);
+	// for(var i in data.sources) console.log(data.sources[i].name+' - '+data.sources[i].id);
+	// if(data.sources) console.log('first source: '+data.sources[0].id+' '+data.sources[0].name);
+	if(data.articles) console.log('first item: '+data.articles[0].title+' from '+data.articles[0].source);
+	/* Guardian code...
 	console.log('results: '+data.response.results.length);
 	console.log('first item: '+data.response.results[0].webTitle);
+	*/
 	if(response.ok) console.log('good response');
-	var results=data.response.results;
-	for(var i in results) {
-		items[i]={
-			"text":results[i].webTitle,
-			"url":results[i].webUrl,
-			"content":results[i].apiUrl
+	if(source.name=="The Guardian") {
+		var results=data.response.results;
+		for(var i in results) {
+			items[i]={
+				"text":results[i].webTitle,
+				"source":"The Guardian",
+				"url":results[i].webUrl,
+			}
 		}
 	}
+	else {
+		var results=data.articles;
+		for(var i in results) {
+			items[i]={
+				"text":results[i].title,
+				"source":results[i].source.name,
+				"url":results[i].url,
+				"content":results[i].content,
+				"time":results[i].publishedAt
+			}
+		}
+	}
+	for(i in items) console.log('article '+i+': '+items[i].source+' @ '+items[i].time);
 	populateList();
 }
 // POPULATE LIST OF NEWS ITEMS FOR CURRENT NEWS SOURCE
 function populateList() {
 	id('headerTitle').textContent=source.name;
-	// items.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
 	list=[];
 	for(var i=0;i<items.length;i++) { // build list of news items
 		list.push(i);
@@ -87,6 +133,7 @@ function message(text,clear) {
 }
 // START-UP CODE
 console.log('starting');
+// TRY JUST USING NEWS API
 var i=sources.length;	// shuffle array or news sources
 var j;
 var temp;
@@ -97,7 +144,7 @@ while(--i>0) {
 	sources[i]=temp;
 }
 source=sources[0]; // start with first in shuffled array of news sources
-getNews(0); // get news items 
+getNews(); // get news items 
 // SERVICE WORKER
 if (navigator.serviceWorker.controller) {
 	console.log('Active service worker found, no need to register')
