@@ -1,6 +1,6 @@
 {
-  "name": "NewsTest PWA",
-  "short_name": "NewsTest",
+  "name": "Latest PWA",
+  "short_name": "Latest",
   "icons": [
 	{
 		"src": "News.png",
