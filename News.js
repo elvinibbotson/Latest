@@ -37,11 +37,19 @@ sources[4]={
 	"name":"UK news",
 	"url":"https://gnews.io/api/v4/top-headlines?lang=en&country=gb&apikey=098cacc5ea46b70cf48d64acb673b23a"
 }
-sources[6]={
+sources[5]={
 	"name":"US news",
 	"url":"https://gnews.io/api/v4/top-headlines?lang=en&country=us&apikey=098cacc5ea46b70cf48d64acb673b23a"
 }
-
+// SOURCE CHOOSER
+id('sourceChooser').addEventListener('change',function(e) {
+	var choice=this.selectedIndex;
+	console.log('select source '+choice);
+	source=sources[choice];
+	getNews();
+})
+// REFRESH
+id('refresh').addEventListener('click',getNews);
 // GET NEWS ITEMS FROM CURRENT NEWS SOURCE
 async function getNews() {
 	/* TRY GNews API
@@ -51,8 +59,8 @@ async function getNews() {
 	var url="https://newsapi.org/v2/top-headlines?sources=associated-press&apiKey=cb249f18c5814e8b9a6eb540f590e40a";
 	*/
 	// NEWS FROM SOURCES
-	console.log('get news items from '+source.name);
 	var url=source.url;
+	console.log('get news items from '+source.name+' at '+url);
 	var response=await fetch(url,
 	{
 		method: "GET"
@@ -69,23 +77,25 @@ async function getNews() {
 	*/
 	if(response.ok) console.log('good response');
 	if(source.name=="The Guardian") {
+		console.log('results: '+data.response.results.length);
+		console.log('first item: '+data.response.results[0].webTitle);
 		var results=data.response.results;
 		for(var i in results) {
 			items[i]={
 				"text":results[i].webTitle,
 				"source":"The Guardian",
 				"url":results[i].webUrl,
+				"time":results[i].webPublicationDate
 			}
 		}
 	}
 	else {
 		var results=data.articles;
-		for(var i in results) {
+		for(var i=0;i<results.length;i++) {
 			items[i]={
 				"text":results[i].title,
 				"source":results[i].source.name,
 				"url":results[i].url,
-				"content":results[i].content,
 				"time":results[i].publishedAt
 			}
 		}
@@ -95,7 +105,7 @@ async function getNews() {
 }
 // POPULATE LIST OF NEWS ITEMS FOR CURRENT NEWS SOURCE
 function populateList() {
-	id('headerTitle').textContent=source.name;
+	// id('headerTitle').textContent=source.name;
 	list=[];
 	for(var i=0;i<items.length;i++) { // build list of news items
 		list.push(i);
@@ -133,16 +143,11 @@ function message(text,clear) {
 }
 // START-UP CODE
 console.log('starting');
-// TRY JUST USING NEWS API
-var i=sources.length;	// shuffle array or news sources
-var j;
-var temp;
-while(--i>0) {
-	j=Math.floor(Math.random*(i+1));
-	temp=sources[j];
-	sources[j]=sources[i];
-	sources[i]=temp;
+var html='';
+for(var i in sources) {
+	html+="<option value="+i+">"+sources[i].name+"</option>";
 }
+id('sourceChooser').innerHTML=html;
 source=sources[0]; // start with first in shuffled array of news sources
 getNews(); // get news items 
 // SERVICE WORKER

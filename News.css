@@ -39,6 +39,7 @@ body {
           align-content: stretch;
   color: white;
   background-color: dimgray }
+/*
 input {
 	font-size: 1.2em;
 	height: 24px;
@@ -46,15 +47,19 @@ input {
 	background-color: black;
 	border: 1px solid white;
 }
+*/
 select {
-	border: solid white 1px;
+	border: none;
+	appearance: none;
 	color: white;
-	background-color: gray;
+	background: none;
+	font-size: 1.2em;
+	font-weight: bold;
 }
 .header {
   position: fixed;
   width: 100%;
-  height: 24px;
+  height: 32px;
   color: white;
   background: black;
   padding: 10px 10px 10px 10px;
@@ -69,7 +74,8 @@ select {
     padding: 0 0.5em;
 }
 .news-item {
-	margin-bottom: 15px;
+	margin-bottom: 5px;
+	border-bottom: dotted #FFF;
 	display: block;
 }
 .news-text {
@@ -106,14 +112,12 @@ select {
     font-size: 1.5em;
     font-weight: bold;
 }
-#page {
-	z-index: 10;
-	display: none;
-}
-#pageFrame {
+#refresh {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+	width: 32px;
+	height: 32px;
+	top: 12px;
+	right: 8px;
+	border: none;
+	background: url(refresh.svg) center center no-repeat;
 }
