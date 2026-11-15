@@ -8,11 +8,12 @@ html, body {
   font-display: optional;
   color: #444;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
+  -moz-osx-font-smoothing: grayscale;
+}
 
 html {
-  overflow: hidden; }
-
+  overflow: hidden;
+}
 body {
   display: -webkit-box;
   display: -webkit-flex;
@@ -38,16 +39,8 @@ body {
       -ms-flex-line-pack: stretch;
           align-content: stretch;
   color: white;
-  background-color: dimgray }
-/*
-input {
-	font-size: 1.2em;
-	height: 24px;
-	color: white;
-	background-color: black;
-	border: 1px solid white;
+  background-color: dimgray
 }
-*/
 select {
 	border: none;
 	appearance: none;
@@ -74,8 +67,9 @@ select {
     padding: 0 0.5em;
 }
 .news-item {
-	margin-bottom: 5px;
-	border-bottom: dotted #FFF;
+	margin-top: 5px
+	margin-bottom: 10px;
+	border-bottom: dotted #888;
 	display: block;
 }
 .news-text {
@@ -83,15 +77,6 @@ select {
   text-align: left;
   font-size: 1.2em;
   color: white;  
-}
-.news-date {
-	color: white;
-	font-size: 1em;
-}
-.news-tags {
-	color: white;
-	font-size: 0.8em;
-	float: right;
 }
 #main {
   padding-top: 50px;
