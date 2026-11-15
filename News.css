@@ -67,8 +67,8 @@ select {
     padding: 0 0.5em;
 }
 .news-item {
-	margin-top: 5px
-	margin-bottom: 10px;
+	margin: 5px;
+	padding-bottom: 10px;
 	border-bottom: dotted #888;
 	display: block;
 }
@@ -76,7 +76,7 @@ select {
   width: 80%;
   text-align: left;
   font-size: 1.2em;
-  color: white;  
+  color: white; 
 }
 #main {
   padding-top: 50px;
