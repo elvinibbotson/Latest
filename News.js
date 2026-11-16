@@ -3,44 +3,121 @@ function id(el) {
 }
 'use strict';
 // GLOBAL VARIABLES	
+var source; // current news source
 var section; // current news source
+var address; // url for news query
+var url; // start of address
+var key; // api key
 var newsData=null;
 var items=[]; // all news items
 var list=[]; // listed news items
 var item=null; // current news item
 var itemIndex=null;
-var url="https://content.guardianapis.com/search?";
-var key="api-key=17cb040c-0a32-4478-829c-382887d95fed"
+var guardianUrl="https://content.guardianapis.com/search?";
+var guardianKey="api-key=17cb040c-0a32-4478-829c-382887d95fed";
+var nytUrl="https://api.nytimes.com/svc/topstories/v2/";
+var nytKey="api-key=zV8GmGzPualLscUxVSIVuFWGM4U5ezSFB6QX5Esp00qhJOw0";
+var guardianSections=[
+	{"value":"latest","name":"Latest"},
+	{"value":"artanddesign","name":"Art+Design"},
+	{"value":"books","name":"Books"}
+	// ADD THE REST........
+]
+var nytSections=[
+	{"value":"latest","name":"Latest"},
+	{"value":"arts","name":"Arts"},
+	{"value":"business","name":"Business"},
+	{"value":"education","name":"Education"}
+	// ADD MORE.........
+]
+// POPULATE SECTION CHOOSER
+function populateChooser() {
+	var sections=(source=="guardian")? guardianSections:nytSections;
+	var html='';
+	for(var i in sections) html+='<option value='+sections[i].value+'>'+sections[i].name+'</option>';
+	console.log('sections options:'+html);
+	id('sectionChooser').innerHTML=html;
+}
+// SOURCE CHOICE
+id('sourceLogo').addEventListener('click',toggleSource);
+// TOGGLE NEWS SOURCE
+function toggleSource() {
+	console.log('toggle news source');
+	if(source=='guardian') {
+		source='nyt';
+		id('sourceLogo').src='nyt.png';
+		url=nytUrl;
+		key=nytKey;
+	}
+	else {
+		source='guardian';
+		id('sourceLogo').src='guardian.png';
+		url=guardianUrl;
+		key=guardianKey;
+	}
+	id('sourceLogo').src=source+'.png';
+	populateChooser();
+	section="latest";
+	getNews();
+}
 // SECTION CHOOSER
 id('sectionChooser').addEventListener('change',function(e) {
-	var choice=this.value;
-	console.log('select section '+choice);
-	if(choice=="latest") source=url+key;
-	else source=url+"section="+choice+"&"+key;
+	console.log('choose section');
+	address=url; 
+	section=this.value;
+	console.log('select section '+section);
+	/*
+	if(section=="latest") address+=key;
+	else address+="section="+section+"&"+key;
+	console.log("address: "+address);
+	*/
 	getNews();
 })
 // REFRESH
 id('refresh').addEventListener('click',getNews);
 // GET NEWS ITEMS FROM CURRENT SECTION CHOICE
 async function getNews() {
-	var url=source;
-	console.log('get news items from '+source);
-	var response=await fetch(url,
+	console.log('get news');
+	address=url;
+	if(source=='guardian') {
+		if(section=="latest") address+=key;
+		else address+="section="+section+"&"+key;
+	}
+	else {
+		if(section=="latest") address+="home.json?"+key;
+		else address+=section+".json?"+key;
+	}
+	console.log('get news items from '+address);
+	var response=await fetch(address,
 	{
 		method: "GET"
 	});
 	var data=await response.json();
-	if(data.articles) console.log('first item: '+data.articles[0].title+' from '+data.articles[0].source);
+	// if(data.articles) console.log('first item: '+data.articles[0].title+' from '+data.articles[0].source);
 	if(response.ok) console.log('good response');
-	console.log('results: '+data.response.results.length);
-	console.log('first item: '+data.response.results[0].webTitle);
-	var results=data.response.results;
-	for(var i in results) {
-		items[i]={
-			"text":results[i].webTitle,
-			"source":"The Guardian",
-			"url":results[i].webUrl,
-			"time":results[i].webPublicationDate
+	if(source=='guardian') {
+		console.log('results: '+data.response.results.length);
+		console.log('first item: '+data.response.results[0].webTitle);
+		var results=data.response.results;
+		for(var i in results) { // always 10 results
+			items[i]={
+				"text":results[i].webTitle,
+				"source":"The Guardian",
+				"url":results[i].webUrl,
+				"time":results[i].webPublicationDate
+			}
+		}
+	}
+	else {
+		console.log('results: '+data.results.length);
+		var results=data.results;
+		for(var i=0;i<10;i++) {
+			items[i]={
+				"text":results[i].title,
+				"source":"New York Times",
+				"url":results[i].url,
+				"time":results[i].published_date
+			}
 		}
 	}
 	for(i in items) console.log('article '+i+': '+items[i].source+' @ '+items[i].time);
@@ -82,7 +159,12 @@ function message(text,clear) {
 }
 // START-UP CODE
 console.log('starting');
-source=url+key;
+source="guardian";
+url=guardianUrl;
+key=guardianKey;
+populateChooser();
+section="latest";
+address=url+key;
 getNews(); // get news items 
 // SERVICE WORKER
 if (navigator.serviceWorker.controller) {
