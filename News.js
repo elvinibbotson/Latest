@@ -20,22 +20,45 @@ var nytKey="api-key=zV8GmGzPualLscUxVSIVuFWGM4U5ezSFB6QX5Esp00qhJOw0";
 var guardianSections=[
 	{"value":"latest","name":"Latest"},
 	{"value":"artanddesign","name":"Art+Design"},
-	{"value":"books","name":"Books"}
-	// ADD THE REST........
+	{"value":"books","name":"Books"},
+	{"value":"business","name":"Business"},
+	{"value":"culture","name":"Culture"},
+	{"value":"education","name":"Education"},
+	{"value":"environment","name":"Environment"},
+	{"value":"fashion","name":"Fashion"},
+	{"value":"film","name":"Film"},
+	{"value":"media","name":"Media"},
+	{"value":"money","name":"Money"},
+	{"value":"music","name":"Music"},
+	{"value":"politics","name":"Politics"},
+	{"value":"science","name":"Science"},
+	{"value":"sport","name":"Sport"},
+	{"value":"technology","name":"Technology"},
+	{"value":"theobserver","name":"The Observer"},
+	{"value":"tv-and-radio","name":"TV+Radio"},
+	{"value":"world","name":"World"}
 ]
 var nytSections=[
 	{"value":"latest","name":"Latest"},
 	{"value":"arts","name":"Arts"},
+	{"value":"books","name":"Books"},
 	{"value":"business","name":"Business"},
-	{"value":"education","name":"Education"}
-	// ADD MORE.........
+	{"value":"education","name":"Education"},
+	{"value":"fashion","name":"Fashion"},
+	{"value":"health","name":"Health"},
+	{"value":"movies","name":"Movies"},
+	{"value":"opinion","name":"Opinion"},
+	{"value":"politics","name":"Politics"},
+	{"value":"science","name":"Science"},
+	{"value":"sports","name":"Sport"},
+	{"value":"technology","name":"Technology"},
+	{"value":"world","name":"World"}
 ]
 // POPULATE SECTION CHOOSER
 function populateChooser() {
 	var sections=(source=="guardian")? guardianSections:nytSections;
 	var html='';
 	for(var i in sections) html+='<option value='+sections[i].value+'>'+sections[i].name+'</option>';
-	console.log('sections options:'+html);
 	id('sectionChooser').innerHTML=html;
 }
 // SOURCE CHOICE
@@ -66,11 +89,6 @@ id('sectionChooser').addEventListener('change',function(e) {
 	address=url; 
 	section=this.value;
 	console.log('select section '+section);
-	/*
-	if(section=="latest") address+=key;
-	else address+="section="+section+"&"+key;
-	console.log("address: "+address);
-	*/
 	getNews();
 })
 // REFRESH
@@ -93,34 +111,32 @@ async function getNews() {
 		method: "GET"
 	});
 	var data=await response.json();
-	// if(data.articles) console.log('first item: '+data.articles[0].title+' from '+data.articles[0].source);
 	if(response.ok) console.log('good response');
 	if(source=='guardian') {
-		console.log('results: '+data.response.results.length);
-		console.log('first item: '+data.response.results[0].webTitle);
 		var results=data.response.results;
 		for(var i in results) { // always 10 results
 			items[i]={
 				"text":results[i].webTitle,
 				"source":"The Guardian",
+				"section":results[i].sectionName,
 				"url":results[i].webUrl,
 				"time":results[i].webPublicationDate
 			}
 		}
 	}
 	else {
-		console.log('results: '+data.results.length);
 		var results=data.results;
 		for(var i=0;i<10;i++) {
 			items[i]={
 				"text":results[i].title,
 				"source":"New York Times",
+				"section":results[i].section,
 				"url":results[i].url,
 				"time":results[i].published_date
 			}
 		}
 	}
-	for(i in items) console.log('article '+i+': '+items[i].source+' @ '+items[i].time);
+	for(i in items) console.log('article '+i+': '+items[i].source+'/'+items[i].section+' @ '+items[i].time);
 	populateList();
 }
 // POPULATE LIST OF NEWS ITEMS FOR CURRENT NEWS SOURCE
@@ -150,13 +166,6 @@ function showItem() {
 	console.log('display news page for item '+itemIndex);
 	window.open(items[itemIndex].url,'pageTab');
 } 
-// DISPLAY MESSAGE
-function message(text,clear) {
-	console.log(text);
-	if(clear) id('message').innerText=text;
-	else id('message').innerText+='\n'+text;
-	toggleDialog('messageDialog',true);
-}
 // START-UP CODE
 console.log('starting');
 source="guardian";

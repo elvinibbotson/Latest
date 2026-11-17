@@ -42,16 +42,16 @@ body {
   background-color: dimgray
 }
 select {
-	border: none;
 	appearance: none;
 	color: white;
 	background: none;
+	border: none;
+	font-family: 'Courier', monospace;
 	font-size: 1.2em;
 	font-weight: bold;
 }
 select:focus-visible {
   border: none;
-  /*border-radius: 3px;*/
   outline: none;
 }
 .header {
